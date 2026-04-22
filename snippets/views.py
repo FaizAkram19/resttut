@@ -99,6 +99,7 @@ class SnippetDetail(APIView):
 
 #using mixins
 
+"""
 class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset=Snippet.objects.all()
     serializer_class=SnippetSerializer
@@ -127,3 +128,14 @@ class SnippetDetail(
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
+"""
+
+# using generic class-based views
+
+class SnippetList(generics.ListCreateAPIView):
+    queryset=Snippet.objects.all()
+    serializer_class=SnippetSerializer
+
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Snippet.objects.all()
+    serializer_class=SnippetSerializer
