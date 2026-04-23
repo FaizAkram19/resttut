@@ -3,6 +3,7 @@ from snippets import views
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework import renderers
 from snippets.views import UserViewSet, SnippetViewSet
+from rest_framework.routers import DefaultRouter
 
 
 """urlpatterns=[
@@ -11,7 +12,7 @@ from snippets.views import UserViewSet, SnippetViewSet
 ]
 """
 
-
+"""
 snippet_list=SnippetViewSet.as_view({
     "get":"list",
     "post":"create"
@@ -41,3 +42,14 @@ urlpatterns=[
     path("users/<int:pk>", user_detail, name="user-detail"),
 ]
 urlpatterns=format_suffix_patterns(urlpatterns)
+"""
+
+#using router for automated url routing
+
+router=DefaultRouter()
+router.register(r"snippets", views.SnippetViewSet, basename="snippet")
+router.register(r"users", views.UserViewSet, basename="user")
+
+urlpatterns=[
+    path("", include(router.urls))
+]
