@@ -27,7 +27,7 @@ class SnippetSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-class UserSerializer(serializers.modelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     snippets=serializers.PrimaryKeyRelatedField(
         many=True, queryset= Snippet.objects.all(),
     )
