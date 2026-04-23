@@ -137,6 +137,13 @@ class SnippetList(generics.ListCreateAPIView):
     queryset=Snippet.objects.all()
     serializer_class=SnippetSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+    """
+    The create() method of our serializer will now be passed 
+    an additional 'owner' field, along with the validated data from the request.
+    """
+
 class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=Snippet.objects.all()
     serializer_class=SnippetSerializer
