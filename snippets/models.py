@@ -1,5 +1,7 @@
 from django.db import models
-from pygments.lexers import get_all_lexers
+from pygments.lexers import get_all_lexers, get_lexer_by_name
+from pygments.formatters.html import HtmlFormatter
+from pygments import highlight
 from pygments.styles import get_all_styles
 
 # Create your models here.
@@ -28,6 +30,8 @@ Similar to above, but for color themes (like "Monokai", "Friendly", or "Dark").
 It gets all available themes from Pygments and turns them into a list of choices.
 """
 class Snippet(models.Model):
+    owner=models.ForeignKey("auth.User", related_name="snippets", on_delete=models.CASCADE)
+    highlighted=models.TextField()
     created=models.DateTimeField(auto_now_add=True)
     title=models.CharField(max_length=100, blank=True, default="")
     code=models.TextField()
@@ -37,6 +41,29 @@ class Snippet(models.Model):
 
     class Meta:
         ordering=["created"]
+    
+    def save(self, *args, **kwargs):
+        """
+        Use the `pygments` library to create a highlighted HTML
+        representation of the code snippet.
+        """
+        lexer=get_lexer_by_name(self.language)
+        linenos="table" if self.linenos else False
+        options= {"title":self.title} if self.title else {}
+        formatter=HtmlFormatter(style=self.style, linenos=linenos, full=True, **options)
+        self.highlighted=highlight(self.code, lexer, formatter)
+        """
+        This is the core logic. It takes the raw code (self.code), applies the rules from the lexer, 
+        formats it using the formatter, and saves the resulting HTML string into the self.highlighted field.
+        """
+        super().save(*args, **kwargs) #it calls the parent class's save() method.
+    """
+    Its primary purpose is to automatically generate a syntax-highlighted 
+    HTML version of a code snippet whenever a model instance is created or updated.
+
+    Instead of just storing raw text, it uses the Pygments library to turn plain code into colorful, 
+    formatted HTML that can be rendered directly in a browser.
+    """
 
 
 
